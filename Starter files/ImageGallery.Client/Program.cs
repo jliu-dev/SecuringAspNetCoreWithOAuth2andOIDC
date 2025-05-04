@@ -11,6 +11,8 @@ builder.Services.AddControllersWithViews()
     .AddJsonOptions(configure => 
         configure.JsonSerializerOptions.PropertyNamingPolicy = null);
 JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
+builder.Services.AddAccessTokenManagement();
+
 
 
 // create an HttpClient used for accessing the API
@@ -19,7 +21,7 @@ builder.Services.AddHttpClient("APIClient", client =>
     client.BaseAddress = new Uri(builder.Configuration["ImageGalleryAPIRoot"]);
     client.DefaultRequestHeaders.Clear();
     client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
-});
+}).AddUserAccessTokenHandler();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -52,7 +54,7 @@ builder.Services.AddAuthentication(options =>
     options.ClaimActions.DeleteClaim("sid");
     options.ClaimActions.DeleteClaim("idp");
     options.Scope.Add("roles");
-    ////options.Scope.Add("imagegalleryapi.fullaccess");
+    options.Scope.Add("imagegalleryapi.fullaccess");
     //options.Scope.Add("imagegalleryapi.read");
     //options.Scope.Add("imagegalleryapi.write");
     //options.Scope.Add("country");
