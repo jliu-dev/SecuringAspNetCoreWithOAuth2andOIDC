@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Net.Http.Headers;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.AspNetCore.Authorization;
+using ImageGallery.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,18 +56,28 @@ builder.Services.AddAuthentication(options =>
     options.ClaimActions.DeleteClaim("sid");
     options.ClaimActions.DeleteClaim("idp");
     options.Scope.Add("roles");
-    options.Scope.Add("imagegalleryapi.fullaccess");
-    //options.Scope.Add("imagegalleryapi.read");
-    //options.Scope.Add("imagegalleryapi.write");
-    //options.Scope.Add("country");
+    //options.Scope.Add("imagegalleryapi.fullaccess");
+    options.Scope.Add("imagegalleryapi.read");
+    options.Scope.Add("imagegalleryapi.write");
+    options.Scope.Add("country");
     //options.Scope.Add("offline_access");
     options.ClaimActions.MapJsonKey("role", "role");
-    //options.ClaimActions.MapUniqueJsonKey("country", "country");
+    options.ClaimActions.MapUniqueJsonKey("country", "country");
     options.TokenValidationParameters = new()
     {
         NameClaimType = "given_name",
         RoleClaimType = "role",
     };
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("UserCanAddImage",
+        AuthorizationPolicies.CanAddImage());
+    //options.AddPolicy("RequireUserRole",
+    //    policy => policy.RequireRole("User"));
+    //options.AddPolicy("RequireCountryRole",
+    //    policy => policy.RequireClaim("country", "NL", "BE"));
 });
 
 

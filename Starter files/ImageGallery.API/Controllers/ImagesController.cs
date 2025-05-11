@@ -63,7 +63,9 @@ namespace ImageGallery.API.Controllers
         }
 
         [HttpPost()]
-        [Authorize(Roles ="PayingUser")]
+        //[Authorize(Roles ="PayingUser")]
+        [Authorize(Policy = "UserCanAddImage")]
+        [Authorize(Policy = "ClientApplicationCanWrite")]
         public async Task<ActionResult<Image>> CreateImage([FromBody] ImageForCreation imageForCreation)
         {
             // Automapper maps only the Title in our configuration
